@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <section class="left">
+    <h2>Temporizador Pomodoro</h2>
+    <div id="timer">
+      <div>
+        <label>Work (min): <input id="work-min" type="number" value="25" min="1"></label>
+        <label>Break (min): <input id="break-min" type="number" value="5" min="1"></label>
+      </div>
+      <div id="time-display">25:00</div>
+      <div>
+        <button id="start">Iniciar</button>
+        <button id="pause">Pausar</button>
+        <button id="reset">Reset</button>
+      </div>
+      <div id="cycles">Ciclos concluídos: <span id="cycles-count">0</span></div>
+    </div>
+
+    <h2>Lembretes</h2>
+    <form action="/reminders" method="post">
+      <input name="title" placeholder="Título do lembrete">
+      <input name="when" type="datetime-local">
+      <button type="submit">Criar lembrete</button>
+    </form>
+    <ul>
+      {% for r in reminders %}
+        <li>{{ r.title }} - {{ r.when.strftime('%Y-%m-%d %H:%M') }}</li>
+      {% else %}
+        <li>Sem lembretes</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="right">
+    <h2>Tarefas</h2>
+    <form action="/tasks" method="post">
+      <input name="title" placeholder="Nova tarefa">
+      <button type="submit">Adicionar</button>
+    </form>
+    <ul>
+      {% for t in tasks %}
+      <li>
+        <form action="/tasks/{{ t.id }}/toggle" method="post" style="display:inline">
+          <button type="submit">{{ '✓' if t.done else ' ' }}</button>
+        </form>
+        {{ t.title }}
+        <form action="/tasks/{{ t.id }}/delete" method="post" style="display:inline">
+          <button type="submit">Excluir</button>
+        </form>
+      </li>
+      {% else %}
+      <li>Sem tarefas</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}
